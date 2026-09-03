@@ -71,9 +71,28 @@ and should be kicked off as a background run given the runtime.
 
 ## Status
 
-`SMOKE` ran end-to-end and confirmed the pipeline works. `PILOT` (80 training runs: 2
-tasks x 4 algorithms x 10 seeds x 200k timesteps) ran overnight; see `results/` for the
-raw per-seed outputs and `paper/main.pdf` for the compiled draft manuscript built from
-them. `FULL` (20 seeds, 4 tasks, 1M timesteps) has not been run; it would substantially
-strengthen the small-N reliability analysis (more seeds to draw sub-studies from, more
-environments) if pursued as a follow-up.
+`SMOKE` ran end-to-end and confirmed the pipeline works. `PILOT` was extended to 20
+seeds per algorithm-environment pair (160 training runs total: 2 tasks x 4 algorithms
+x 20 seeds x 200k timesteps); see `results/` for the raw per-seed outputs. `FULL` (4
+tasks, 1M timesteps) has not been run; more environments would be the natural next
+step to strengthen the paper further, e.g. for a revision request.
+
+## The paper
+
+Two compiled drafts live in `paper/`:
+
+- `main.tex` / `main.pdf` — the full draft with author information, for your own
+  records, an arXiv-style preprint, or camera-ready use after acceptance.
+- `main_anon.tex` / `main_anon.pdf` — an anonymized copy for actual submission.
+  **IEEE RA-L uses double-anonymous review** (verified against their author
+  instructions): reviewers must not be able to identify the authors, so the
+  anonymized copy has no name, affiliation, or identifying repository link. If you
+  edit the paper's content, apply the same edit to both files, or regenerate
+  `main_anon.tex` from `main.tex` and reapply the anonymization diff (strip the
+  `\author{...}` block, the `\thanks{...}` footnote, and the repository URL in
+  "Code and Data Availability").
+
+The git repo here is local-only (no remote configured) so it is not publicly visible
+regardless of which draft you're looking at. Keep it that way until you've decided
+where and when you're submitting: making it public under your real GitHub account
+before/during double-anonymous review would deanonymize the submission.
