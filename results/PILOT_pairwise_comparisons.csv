@@ -1,0 +1,8 @@
+env,algo_a,algo_b,n_a,n_b,naive_ttest_p,naive_significant_p05,prob_improvement,poi_ci_lo,poi_ci_hi,rigorous_significant,naive_p_holm,naive_significant_holm_p05
+Reacher-v5,A2C,PPO,10,10,2.173422069290258e-05,True,0.0,0.0,0.0,True,6.520266207870774e-05,True
+Reacher-v5,A2C,SAC,10,10,6.786573724932972e-06,True,0.0,0.0,0.0,True,3.3932868624664865e-05,True
+Reacher-v5,A2C,TD3,10,10,1.5351009262923286e-05,True,0.0,0.0,0.0,True,6.140403705169314e-05,True
+Reacher-v5,PPO,SAC,10,10,4.568615308541566e-06,True,0.0,0.0,0.0,True,2.74116918512494e-05,True
+Reacher-v5,PPO,TD3,10,10,0.310350625549598,False,0.34,0.11,0.6,False,0.310350625549598,False
+Reacher-v5,SAC,TD3,10,10,0.00025597765845684206,True,0.98,0.92,1.0,True,0.0005119553169136841,True
+HalfCheetah-v5,PPO,SAC,10,7,6.139216634016422e-09,True,0.0,0.0,0.0,True,6.139216634016422e-09,True

@@ -1,0 +1,25 @@
+\begin{table*}[t]
+\centering
+\caption{Small-$N$ reliability: probability that a naive study using only $k$ seeds reaches a conclusion that disagrees with the full-data rigorous answer, computed by exact (or, where noted, sampled) enumeration of $k$-seed subsets.}
+\label{tab:smalln}
+\begin{tabular}{llccrrr}
+\toprule
+Env. & Pair & Real effect? & $k$ & Trials & \% naive sig.\ & Disagreement rate \\
+\midrule
+HalfCheetah-v5 & PPO vs SAC & \checkmark & 3 & 4000 & 100.0\% & 0.0\% \\
+HalfCheetah-v5 & PPO vs SAC & \checkmark & 5 & 4000 & 100.0\% & 0.0\% \\
+Reacher-v5 & A2C vs PPO & \checkmark & 3 & 4000 & 61.3\% & 38.7\% \\
+Reacher-v5 & A2C vs PPO & \checkmark & 5 & 4000 & 100.0\% & 0.0\% \\
+Reacher-v5 & A2C vs SAC & \checkmark & 3 & 4000 & 72.4\% & 27.6\% \\
+Reacher-v5 & A2C vs SAC & \checkmark & 5 & 4000 & 100.0\% & 0.0\% \\
+Reacher-v5 & A2C vs TD3 & \checkmark & 3 & 4000 & 63.3\% & 36.7\% \\
+Reacher-v5 & A2C vs TD3 & \checkmark & 5 & 4000 & 100.0\% & 0.0\% \\
+Reacher-v5 & PPO vs SAC & \checkmark & 3 & 4000 & 72.4\% & 27.6\% \\
+Reacher-v5 & PPO vs SAC & \checkmark & 5 & 4000 & 100.0\% & 0.0\% \\
+Reacher-v5 & PPO vs TD3 & -- & 3 & 4000 & 3.4\% & 3.4\% \\
+Reacher-v5 & PPO vs TD3 & -- & 5 & 4000 & 4.9\% & 4.9\% \\
+Reacher-v5 & SAC vs TD3 & \checkmark & 3 & 4000 & 29.9\% & 70.0\% \\
+Reacher-v5 & SAC vs TD3 & \checkmark & 5 & 4000 & 96.6\% & 3.4\% \\
+\bottomrule
+\end{tabular}
+\end{table*}

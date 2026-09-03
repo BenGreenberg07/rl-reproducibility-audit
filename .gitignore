@@ -1,0 +1,13 @@
+rlvenv/
+logs/*.log
+__pycache__/
+*.pyc
+
+# LaTeX build artifacts (keep main.tex, refs.bib, main.pdf)
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.synctex.gz
+pilot_sweep.log

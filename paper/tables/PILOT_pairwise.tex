@@ -1,0 +1,18 @@
+\begin{table*}[t]
+\centering
+\caption{Pairwise algorithm comparisons: naive Welch's $t$-test (raw and Holm-corrected) versus the rigorous bootstrap-CI'd probability of improvement, on the full seed set. A ``significant'' rigorous call means the 95\% CI on $P(A>B)$ excludes 0.5.}
+\label{tab:pairwise}
+\begin{tabular}{llrrccccc}
+\toprule
+Env. & Pair ($A$ vs $B$) & $n_A$ & $n_B$ & Naive $p$ & Naive sig.\ & Holm sig.\ & $P(A{>}B)$ [95\% CI] & Rigorous sig.\ \\
+\midrule
+Reacher-v5 & A2C vs PPO & 10 & 10 & 2.2e-05 & \checkmark & \checkmark & 0.00 [0.00, 0.00] & \checkmark \\
+Reacher-v5 & A2C vs SAC & 10 & 10 & 6.8e-06 & \checkmark & \checkmark & 0.00 [0.00, 0.00] & \checkmark \\
+Reacher-v5 & A2C vs TD3 & 10 & 10 & 1.5e-05 & \checkmark & \checkmark & 0.00 [0.00, 0.00] & \checkmark \\
+Reacher-v5 & PPO vs SAC & 10 & 10 & 4.6e-06 & \checkmark & \checkmark & 0.00 [0.00, 0.00] & \checkmark \\
+Reacher-v5 & PPO vs TD3 & 10 & 10 & 0.31 & -- & -- & 0.34 [0.11, 0.60] & -- \\
+Reacher-v5 & SAC vs TD3 & 10 & 10 & 0.00026 & \checkmark & \checkmark & 0.98 [0.92, 1.00] & \checkmark \\
+HalfCheetah-v5 & PPO vs SAC & 10 & 7 & 6.1e-09 & \checkmark & \checkmark & 0.00 [0.00, 0.00] & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table*}
