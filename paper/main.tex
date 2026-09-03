@@ -209,16 +209,23 @@ disagreement rate against the full-data conclusion falls as the number of seeds 
 hypothetical small study increases. For pairs with a genuine effect (solid lines), disagreement is
 driven by false negatives: the naive test correctly detects the effect's direction whenever it
 finds significance at all (we observed zero direction-flip errors in this data), but at $k=3$ it
-frequently fails to detect the effect at all. For pairs with no real effect (the PPO-vs-TD3
-comparison; dashed line), the naive test's false-positive rate tracks the nominal $\alpha=0.05$
-threshold closely across all $k$, exactly as a well-calibrated test should.
+frequently fails to detect the effect at all. For the two pairs with no real effect (PPO vs.\ TD3
+on Reacher-v5, and A2C vs.\ PPO on HalfCheetah-v5; dashed lines), the naive test's false-positive
+rate instead tracks the nominal $\alpha=0.05$ threshold closely across all $k$, exactly as a
+well-calibrated test should, and exactly as expected since there is no true effect to miss or
+detect.
+
+The most striking cases are the closer real matchups: on HalfCheetah-v5, A2C vs.\ TD3 and PPO vs.\
+TD3 both disagree with the full-data conclusion in over 80\% of possible 3-seed sub-studies, and
+PPO vs.\ TD3 still disagrees over half the time even at $k=5$, a seed count very common in the
+published literature.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{../figures/smalln_disagreement_PILOT.png}
   \caption{Disagreement rate between a naive $k$-seed study and the full-data (ten-seed) rigorous
   conclusion, as a function of $k$, for every algorithm pair. Solid markers: pairs with a genuine
-  effect (disagreement is a missed detection). Dashed markers: the one pair with no detectable
+  effect (disagreement is a missed detection). Dashed markers: the two pairs with no detectable
   effect (disagreement is a false positive, tracking the nominal 5\% level, dotted line).}
   \label{fig:smalln}
 \end{figure}
@@ -229,11 +236,13 @@ threshold closely across all $k$, exactly as a well-calibrated test should.
 
 Figure~\ref{fig:power} and Table~\ref{tab:power} show the statistical-power explanation for the
 above: several algorithm pairs have effect sizes so large (Cohen's $d > 3$) that even $n=3$ seeds
-gives reasonable power, while at least one pair (PPO vs.\ TD3 on Reacher-v5) has a small-to-medium
-effect size for which even our full $n=10$ sample is underpowered, explaining why our own rigorous
-analysis correctly declines to call that comparison significant: the honest conclusion is not that
-the two algorithms are equivalent, but that we lack the statistical power, even at $n=10$, to
-resolve whichever modest difference (if any) exists between them.
+gives reasonable power, while the two pairs identified above as having no detectable effect (PPO
+vs.\ TD3 on Reacher-v5, $d=0.47$; A2C vs.\ PPO on HalfCheetah-v5, $d=0.50$) have small-to-medium
+effect sizes for which even our full $n=10$ sample is underpowered (power below 20\% in both
+cases), explaining why our own rigorous analysis correctly declines to call either comparison
+significant: the honest conclusion is not that the algorithms in question are equivalent, but that
+we lack the statistical power, even at $n=10$, to resolve whichever modest difference (if any)
+exists between them.
 
 \begin{figure}[t]
   \centering
@@ -259,10 +268,10 @@ our largest observed effect sizes leave a non-trivial disagreement rate at $k=3$
 publication's headline claim. Reporting five or more seeds sharply reduces, but does not
 eliminate, this risk.
 
-Second, when an effect is modest, as with PPO versus TD3 in our data, no seed count in the range
-typically used in the literature is likely to resolve it (Table~\ref{tab:power}). A ``no
-significant difference'' finding under these conditions should be reported as inconclusive due to
-insufficient power, not as evidence of equivalence.
+Second, when an effect is modest, as with the two pairs we found to have no detectable difference,
+no seed count in the range typically used in the literature is likely to resolve it
+(Table~\ref{tab:power}). A ``no significant difference'' finding under these conditions should be
+reported as inconclusive due to insufficient power, not as evidence of equivalence.
 
 Third, multiple-comparison correction, while it did not change any conclusion in our particular
 dataset (Table~\ref{tab:pairwise}), is a second, independent source of inflated significance

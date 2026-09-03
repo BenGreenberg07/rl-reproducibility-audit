@@ -6,8 +6,18 @@
 \toprule
 Env. & Pair & Real effect? & $k$ & Trials & \% naive sig.\ & Disagreement rate \\
 \midrule
+HalfCheetah-v5 & A2C vs PPO & -- & 3 & 4000 & 19.4\% & 19.4\% \\
+HalfCheetah-v5 & A2C vs PPO & -- & 5 & 4000 & 7.7\% & 7.7\% \\
+HalfCheetah-v5 & A2C vs SAC & \checkmark & 3 & 4000 & 100.0\% & 0.0\% \\
+HalfCheetah-v5 & A2C vs SAC & \checkmark & 5 & 4000 & 100.0\% & 0.0\% \\
+HalfCheetah-v5 & A2C vs TD3 & \checkmark & 3 & 4000 & 17.6\% & 82.4\% \\
+HalfCheetah-v5 & A2C vs TD3 & \checkmark & 5 & 4000 & 69.3\% & 30.7\% \\
 HalfCheetah-v5 & PPO vs SAC & \checkmark & 3 & 4000 & 100.0\% & 0.0\% \\
 HalfCheetah-v5 & PPO vs SAC & \checkmark & 5 & 4000 & 100.0\% & 0.0\% \\
+HalfCheetah-v5 & PPO vs TD3 & \checkmark & 3 & 4000 & 18.4\% & 81.7\% \\
+HalfCheetah-v5 & PPO vs TD3 & \checkmark & 5 & 4000 & 46.1\% & 53.9\% \\
+HalfCheetah-v5 & SAC vs TD3 & \checkmark & 3 & 4000 & 23.9\% & 76.1\% \\
+HalfCheetah-v5 & SAC vs TD3 & \checkmark & 5 & 4000 & 82.2\% & 17.8\% \\
 Reacher-v5 & A2C vs PPO & \checkmark & 3 & 4000 & 61.3\% & 38.7\% \\
 Reacher-v5 & A2C vs PPO & \checkmark & 5 & 4000 & 100.0\% & 0.0\% \\
 Reacher-v5 & A2C vs SAC & \checkmark & 3 & 4000 & 72.4\% & 27.6\% \\
