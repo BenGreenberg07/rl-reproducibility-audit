@@ -35,9 +35,18 @@ Reinforcement learning, reproducibility, statistical power, robot control, bench
 
 \section{Introduction}
 
-Robot-control research increasingly reports results produced by deep reinforcement learning (RL)
-policies, and papers introducing or comparing such policies routinely support their claims with a
-small number of training seeds. Henderson et al.~\cite{henderson2018deep} first documented how
+Deploying a learned policy on real hardware is normally preceded by a simulation stage that
+selects which algorithm to use, and that selection is usually made from a handful of simulated
+training seeds. This matters more in robotics than in RL generally: simulated seeds are
+effectively free, but real-robot trials are not, they consume operator time, wear physical
+hardware, and are frequently limited to single-digit repeats in
+practice~\cite{mahmood2018benchmarking,dulac2021challenges}. If a simulated comparison with tens
+of seeds is already unreliable, the same comparison run with the far smaller seed budgets
+available on real hardware, or the sim-to-real pipelines that inherit a simulation-stage algorithm
+choice~\cite{zhao2020simtoreal}, is likely worse, not better. Robot-control research increasingly
+reports results produced by deep reinforcement learning (RL) policies, and papers introducing or
+comparing such policies routinely support their claims with a small number of training seeds.
+Henderson et al.~\cite{henderson2018deep} first documented how
 sensitive deep RL results are to implementation details, hyperparameters, and random seed alone,
 and argued that the small seed counts common in the literature at the time were inadequate to
 support the significance claims being made. Colas et al.~\cite{colas2018many} formalized this
@@ -105,6 +114,16 @@ Learning Environment and Procgen. We apply the same toolkit specifically to robo
 and extend it with the exact small-$N$ combinatorial analysis that is the main methodological
 contribution of this paper.
 
+\textbf{Real-world and sim-to-real RL.} Mahmood et al.~\cite{mahmood2018benchmarking} benchmarked
+RL algorithms directly on physical robots and report the practical seed budgets real hardware
+allows, orders of magnitude below simulation. Dulac-Arnold et al.~\cite{dulac2021challenges}
+identify learning from limited real-system samples as a core unsolved challenge for deploying RL
+in practice. Zhao et al.~\cite{zhao2020simtoreal} survey sim-to-real transfer methods, the pipeline
+through which a simulation-stage algorithm choice, of the kind this paper studies, ultimately
+reaches physical robots. Our audit quantifies a risk that sits upstream of all three: if the
+simulation-stage comparison used to choose an algorithm is itself unreliable at small seed counts,
+that unreliability propagates into every downstream real-world or sim-to-real decision.
+
 \section{Method}
 
 \subsection{Experimental Setup}
@@ -118,7 +137,9 @@ twenty random seeds. Every process is pinned to a single CPU thread
 environment variables, plus \texttt{torch.set\_num\_threads(1)}) so that the many training runs
 launched in parallel do not oversubscribe the host machine's CPU cores; without this, we observed
 severe (multi-fold) slowdowns from thread contention. Final performance for each run is the mean
-return over 30 deterministic evaluation episodes at the end of training.
+return over 30 deterministic evaluation episodes at the end of training. All 160 runs were trained
+on a single CPU-only consumer machine (no GPU); the entire study, including the small-$N$ and
+power analyses, required no specialized compute.
 
 Observation normalization (running mean/variance, via \texttt{VecNormalize}) is applied
 identically to all four algorithms during training, and reward normalization is applied during

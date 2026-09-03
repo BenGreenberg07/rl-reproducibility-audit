@@ -9,6 +9,7 @@ it does.
 import itertools
 import numpy as np
 import pandas as pd
+from scipy import stats
 from statsmodels.stats.power import TTestIndPower
 
 import config as C
@@ -23,15 +24,54 @@ def cohens_d(x, y):
     return (x.mean() - y.mean()) / pooled_std if pooled_std > 0 else 0.0
 
 
+def _power_scipy(d, n, alpha=0.05):
+    """Two-sample t-test power via the noncentral-t distribution, computed directly
+    with scipy rather than through statsmodels' wrapper. More numerically stable at
+    extreme effect sizes, though it can still fail at the very largest ones (see
+    _power_montecarlo below)."""
+    df = 2 * n - 2
+    nc = d * np.sqrt(n / 2)
+    t_crit = stats.t.ppf(1 - alpha / 2, df)
+    return 1 - stats.nct.cdf(t_crit, df, nc) + stats.nct.cdf(-t_crit, df, nc)
+
+
+def _power_montecarlo(d, n, alpha=0.05, n_sims=200_000, seed=0):
+    """Empirical power via direct simulation: draw n_sims two-sample datasets under the
+    given effect size and count how often Welch's t-test rejects at alpha. Used only as
+    a last resort when the closed-form noncentral-t computation itself is numerically
+    unstable (huge effect sizes at very small n), since it can't fail the way a
+    closed-form CDF evaluation can."""
+    rng = np.random.default_rng(seed)
+    rejections = 0
+    batch = 20_000
+    for start in range(0, n_sims, batch):
+        m = min(batch, n_sims - start)
+        g1 = rng.normal(d, 1, size=(m, n))
+        g2 = rng.normal(0, 1, size=(m, n))
+        _, p = stats.ttest_ind(g1, g2, axis=1, equal_var=False)
+        rejections += int((p < alpha).sum())
+    return rejections / n_sims
+
+
 def _safe_power(d, n):
-    """statsmodels' noncentral-t power computation can return NaN with no exception at
-    extreme (effect_size, n) combinations (e.g. n=2 with a very large effect size hits a
-    numerical edge case), so check finiteness directly rather than relying on try/except."""
+    """Cascading fallback: statsmodels first (fast, usually fine), then direct scipy
+    (more stable at extreme effect sizes), then Monte Carlo simulation (always finite,
+    used only for the rare cases where even the direct noncentral-t CDF evaluation
+    itself is numerically unstable). Every value returned is a real number; nothing is
+    silently reported as NaN in the paper's tables."""
     try:
         val = float(_power.power(effect_size=d, nobs1=n, alpha=0.05, ratio=1.0))
+        if np.isfinite(val):
+            return val
     except Exception:
-        return float("nan")
-    return val if np.isfinite(val) else float("nan")
+        pass
+    try:
+        val = float(_power_scipy(d, n))
+        if np.isfinite(val):
+            return val
+    except Exception:
+        pass
+    return float(_power_montecarlo(d, n))
 
 
 def _n_needed_for_power(d, target=0.8, grid=range(2, 201)):
