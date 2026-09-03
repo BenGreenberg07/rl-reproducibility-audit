@@ -29,10 +29,14 @@ PRESETS = {
         final_eval_episodes=20,
     ),
     # Moderate: real MuJoCo robot-control tasks, still laptop-feasible (~hours).
+    # Widened from 10 to 20 seeds on 2026-09-03 to strengthen the small-N combinatorial
+    # analysis (more seeds to draw sub-studies from, tighter bootstrap CIs); the first
+    # 10 seeds' worth of results and the paper built from them are preserved in git
+    # history at commit "Finalize paper on complete 80/80 PILOT dataset".
     "PILOT": dict(
         envs=["Reacher-v5", "HalfCheetah-v5"],
         algos=["PPO", "SAC", "TD3", "A2C"],
-        seeds=list(range(10)),
+        seeds=list(range(20)),
         total_timesteps=200_000,
         eval_freq=10_000,
         n_eval_episodes=10,

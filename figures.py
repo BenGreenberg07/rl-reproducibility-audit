@@ -98,15 +98,21 @@ def fig_smalln_reliability(preset_name):
         print("skip fig_smalln_reliability (not enough seeds yet)")
         return
     fig, ax = plt.subplots(figsize=(7.5, 5.5))
+    any_no_effect = False
     for (env_id, a1, a2), sub in df.groupby(["env", "algo_a", "algo_b"]):
         sub = sub.sort_values("k")
         label = f"{a1} vs {a2} ({env_id})"
-        style = "-o" if sub["full_significant"].iloc[0] else "--s"
+        has_effect = bool(sub["full_significant"].iloc[0])
+        any_no_effect = any_no_effect or not has_effect
+        style = "-o" if has_effect else "--s"
         ax.plot(sub["k"], sub["disagreement_rate_pct"], style, label=label, alpha=0.85, ms=4)
     ax.set_xlabel("Number of seeds used in the naive small-N study (k)")
     ax.set_ylabel("Disagreement rate vs. full-data conclusion (%)")
-    ax.set_title("How often would a naive k-seed study get it wrong?\n"
-                 "(solid = a real effect exists; dashed = no real effect, false-positive rate)")
+    if any_no_effect:
+        subtitle = "(solid = a real effect exists; dashed = no real effect, false-positive rate)"
+    else:
+        subtitle = "(every pair here has a genuine effect at full sample size)"
+    ax.set_title(f"How often would a naive k-seed study get it wrong?\n{subtitle}")
     ax.legend(fontsize=7, loc="upper right")
     ax.axhline(5, color="gray", lw=0.8, ls=":")
     fig.tight_layout()

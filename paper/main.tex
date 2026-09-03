@@ -17,19 +17,21 @@ Reported comparisons between deep reinforcement learning (RL) algorithms on robo
 benchmarks routinely rest on a handful of random seeds, often as few as three to five, and
 a single significance test run on that small sample. We audit this practice directly.
 Using four widely used algorithms (PPO, SAC, TD3, A2C) trained on two standard continuous-control
-robot tasks (Reacher-v5 and HalfCheetah-v5) with ten independent seeds per algorithm-task pair,
+robot tasks (Reacher-v5 and HalfCheetah-v5) with twenty independent seeds per algorithm-task pair,
 we compare the conclusions a naive small-$N$ study would have reached against a statistically
 rigorous analysis (stratified bootstrap confidence intervals and interquartile-mean aggregation,
-following the methodology of Agarwal et al.) computed on the full data. We further quantify, by
-exact combinatorial enumeration of all possible $k$-seed subsets ($k=3,\ldots,9$) of our data, how
-often a study using only $k$ seeds would have reached a different conclusion than the full-data
-answer, and complement this empirical result with a statistical power analysis explaining the
-mechanism. We find that for algorithm pairs with a genuine, statistically robust performance gap,
-a 3-seed study would have missed or misjudged the difference in up to
-\input{tables/PILOT_headline_worst_k3.tex}\%
-of possible seed selections, a rate that falls sharply but does not vanish by five seeds. We
-release our full pipeline, data, and analysis code to support further audits of this kind on other
-benchmarks and algorithms.
+following the methodology of Agarwal et al.) computed on the full data; even at twenty seeds, one
+of twelve algorithm-pair comparisons shows a genuine disagreement, a naive $t$-test that narrowly
+misses significance ($p=0.060$) on an effect the rigorous method correctly identifies as real. We
+further quantify, by exact combinatorial enumeration of all possible $k$-seed subsets
+($k=3,\ldots,19$) of our data, how often a study using only $k$ seeds would have reached a
+different conclusion than the full-data answer, and complement this empirical result with a
+statistical power analysis explaining the mechanism. We find that for algorithm pairs with a
+genuine, statistically robust performance gap, a 3-seed study would have missed or misjudged the
+difference in up to \input{tables/PILOT_headline_worst_k3.tex}\% of possible seed selections; for
+the pair with the smallest effect size, this failure rate remains above 70\% even using nineteen
+of our twenty seeds. We release our full pipeline, data, and analysis code to support further
+audits of this kind on other benchmarks and algorithms.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -68,13 +70,13 @@ control robot tasks, Reacher-v5 and HalfCheetah-v5, implemented via Stable-Basel
 
 \begin{enumerate}
   \item A full statistical audit of \input{tables/PILOT_n_runs.tex} independent training runs
-    (ten seeds per algorithm-environment pair), comparing naive Welch's $t$-tests, both
+    (twenty seeds per algorithm-environment pair), comparing naive Welch's $t$-tests, both
     uncorrected and Holm-corrected~\cite{holm1979sequentially} for multiple comparisons, against
     the rigorous bootstrap-CI'd probability of improvement from \texttt{rliable}.
   \item An exact combinatorial small-$N$ reliability analysis: for every algorithm pair and every
-    $k \in \{3,\ldots,9\}$, we enumerate (or, where the combinatorial space is too large, densely
-    sample) every possible $k$-seed sub-study drawable from our ten seeds, and report the fraction
-    that would have reached a conclusion contradicting the full-data answer.
+    $k \in \{3,\ldots,10,12,15,19\}$, we enumerate (or, where the combinatorial space is too large,
+    densely sample) every possible $k$-seed sub-study drawable from our twenty seeds, and report the
+    fraction that would have reached a conclusion contradicting the full-data answer.
   \item A statistical power analysis that explains this empirical result mechanistically, computing
     the power available at conventional seed counts (3, 5, 10) for each observed effect size, and
     the seed count that would be required for adequate (80\%) power.
@@ -138,7 +140,7 @@ audit is designed to answer.
 
 For each algorithm on each environment, we report the interquartile mean (IQM, the mean after
 discarding the top and bottom 25\% of runs) of the final evaluation return, with a 95\% confidence
-interval from a percentile bootstrap (5{,}000 resamples) over the ten seeds, following
+interval from a percentile bootstrap (5{,}000 resamples) over the twenty seeds, following
 \cite{agarwal2021deep}. For each pair of algorithms on each environment, we compute the rigorous
 probability of improvement, $P(X > Y)$, the Mann-Whitney-based estimator of
 \cite{agarwal2021deep}, together with its own bootstrap confidence interval; we call a pairwise
@@ -155,16 +157,16 @@ inflation of the family-wise error rate.
 \subsection{Small-$N$ Reliability Analysis}
 \label{sec:smalln}
 
-The comparison above uses the same ten seeds for both the naive and the rigorous methods, so it
+The comparison above uses the same twenty seeds for both the naive and the rigorous methods, so it
 tests only whether the choice of statistic matters, not whether the sample size does. The more
 common failure mode described in \cite{henderson2018deep} and \cite{colas2018many} is that
 published studies simply use far fewer seeds than we collected. We test this directly: for each
-algorithm pair and each $k \in \{3, 4, \ldots, 9\}$, we consider every way of choosing $k$ of the
-ten seeds for algorithm $A$ and $k$ of the ten seeds for algorithm $B$ (an exhaustive enumeration
-of $\binom{10}{k}^2$ sub-studies where this is computationally tractable, and a dense random
-sample of up to 4{,}000 such sub-studies otherwise), run the naive $t$-test on each, and record the
-fraction of sub-studies whose significance call disagrees with the rigorous, full-$N$ answer. We
-separately record the fraction of \emph{directionally wrong} conclusions, cases where the small
+algorithm pair and each $k \in \{3, 4, \ldots, 10, 12, 15, 19\}$, we consider every way of choosing
+$k$ of the twenty seeds for algorithm $A$ and $k$ of the twenty seeds for algorithm $B$ (an
+exhaustive enumeration of $\binom{20}{k}^2$ sub-studies where this is computationally tractable,
+and a dense random sample of up to 4{,}000 such sub-studies otherwise), run the naive $t$-test on
+each, and record the fraction of sub-studies whose significance call disagrees with the rigorous,
+full-$N$ answer. We separately record the fraction of \emph{directionally wrong} conclusions, cases where the small
 sample not only differs in significance but asserts the opposite algorithm is better.
 
 \subsection{Power Analysis}
@@ -192,13 +194,19 @@ following the aggregate-metric methodology of \cite{agarwal2021deep}.
 \subsection{Naive vs.\ Rigorous Significance}
 
 Table~\ref{tab:pairwise} compares the naive (raw and Holm-corrected) and rigorous conclusions for
-every algorithm pair, using the full ten-seed sample. At full sample size, the two methods
-disagree in \input{tables/PILOT_pairwise_disagree_counts.tex} of the comparisons reported here:
-every comparison in our data is either a sufficiently large effect that both approaches agree it
-is real, or genuinely ambiguous, in which both approaches correctly decline to call it
-significant. This is expected and reassuring: it confirms that, \emph{given ten seeds}, the choice
-of test statistic alone is not the dominant source of unreliability in our data. The dominant
-source, as Section~\ref{sec:smalln} shows directly, is sample size.
+every algorithm pair, using the full twenty-seed sample. At full sample size, the two methods
+disagree in \input{tables/PILOT_pairwise_disagree_counts.tex} of the comparisons reported here.
+Eleven of the twelve comparisons are large enough effects that both approaches agree they are
+real, but one, PPO versus TD3 on Reacher-v5, is a genuine disagreement even at $n=20$: the naive
+Welch's $t$-test narrowly misses significance ($p=0.060$), while the rigorous bootstrap-CI'd
+probability of improvement correctly identifies the effect as real ($P(\text{TD3}>\text{PPO})=0.68$,
+95\% CI $[0.51, 0.84]$, excluding 0.5). This is precisely the failure mode this paper is designed
+to surface: a real, modest effect that a conventional significance test, even given a seed count
+several times larger than what most papers report, fails to detect, while a more statistically
+efficient rigorous method resolves it correctly. That this is the \emph{only} disagreement among
+twelve comparisons at full sample size also confirms that, given twenty seeds, the choice of test
+statistic is a secondary source of unreliability compared to sample size itself, which
+Section~\ref{sec:smalln} shows directly is the dominant factor.
 
 \input{tables/PILOT_pairwise.tex}
 
@@ -206,43 +214,58 @@ source, as Section~\ref{sec:smalln} shows directly, is sample size.
 
 Figure~\ref{fig:smalln} and Table~\ref{tab:smalln} show, for every algorithm pair, how the
 disagreement rate against the full-data conclusion falls as the number of seeds $k$ used in the
-hypothetical small study increases. For pairs with a genuine effect (solid lines), disagreement is
-driven by false negatives: the naive test correctly detects the effect's direction whenever it
-finds significance at all (we observed zero direction-flip errors in this data), but at $k=3$ it
-frequently fails to detect the effect at all. For the two pairs with no real effect (PPO vs.\ TD3
-on Reacher-v5, and A2C vs.\ PPO on HalfCheetah-v5; dashed lines), the naive test's false-positive
-rate instead tracks the nominal $\alpha=0.05$ threshold closely across all $k$, exactly as a
-well-calibrated test should, and exactly as expected since there is no true effect to miss or
-detect.
+hypothetical small study increases. At $n=20$, every one of the twelve algorithm pairs we test
+shows a genuine effect, so disagreement in this analysis is almost entirely driven by false
+negatives: the naive test usually detects the effect's correct direction whenever it finds
+significance at all, but at $k=3$ it frequently fails to detect the effect in the first place. We
+did observe a small number of \emph{directionally wrong} conclusions, at most 0.175\% of sub-studies
+for any single (pair, $k$) combination, confirming that outright sign errors are rare but not
+strictly impossible even for these effect sizes.
 
-The most striking cases are the closer real matchups: on HalfCheetah-v5, A2C vs.\ TD3 and PPO vs.\
-TD3 both disagree with the full-data conclusion in over 80\% of possible 3-seed sub-studies, and
-PPO vs.\ TD3 still disagrees over half the time even at $k=5$, a seed count very common in the
-published literature.
+The two most persistent cases are PPO vs.\ TD3 on Reacher-v5 and A2C vs.\ PPO on HalfCheetah-v5,
+the same two comparisons that a smaller, $n=10$ sample was unable to resolve at all
+(Section~\ref{sec:power_results}). PPO vs.\ TD3 disagrees with the full-data conclusion in 92.7\% of
+possible 3-seed sub-studies, and the disagreement rate falls only slowly as $k$ grows: it remains
+above 80\% through $k=9$, and even at $k=19$, using every seed but one of our full budget, it is
+still wrong 74.0\% of the time. A2C vs.\ PPO on HalfCheetah-v5 shows the same pattern somewhat less
+severely, falling from 83.2\% at $k=3$ to 11.3\% at $k=19$. Both trace directly back to their small
+effect sizes (Section~\ref{sec:power_results}): a modest true difference does not become easy to detect
+just because more seeds are available, it requires substantially more.
+
+The remaining ten pairs, all with larger effect sizes, show the more familiar and reassuring
+pattern: high disagreement at $k=3$ that falls to single digits by $k=6$--$7$ and to zero by
+$k=9$.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{../figures/smalln_disagreement_PILOT.png}
-  \caption{Disagreement rate between a naive $k$-seed study and the full-data (ten-seed) rigorous
-  conclusion, as a function of $k$, for every algorithm pair. Solid markers: pairs with a genuine
-  effect (disagreement is a missed detection). Dashed markers: the two pairs with no detectable
-  effect (disagreement is a false positive, tracking the nominal 5\% level, dotted line).}
+  \caption{Disagreement rate between a naive $k$-seed study and the full-data (twenty-seed) rigorous
+  conclusion, as a function of $k$, for every algorithm pair. All twelve pairs shown have a genuine
+  effect at full sample size; the two that stay wrong even at large $k$ (PPO vs.\ TD3 on
+  Reacher-v5, A2C vs.\ PPO on HalfCheetah-v5) are exactly the two smallest observed effect sizes
+  (Section~\ref{sec:power_results}).}
   \label{fig:smalln}
 \end{figure}
 
 \input{tables/PILOT_smalln.tex}
 
 \subsection{Why Small Samples Fail: Power Analysis}
+\label{sec:power_results}
 
 Figure~\ref{fig:power} and Table~\ref{tab:power} show the statistical-power explanation for the
 above: several algorithm pairs have effect sizes so large (Cohen's $d > 3$) that even $n=3$ seeds
-gives reasonable power, while the two pairs identified above as having no detectable effect (PPO
-vs.\ TD3 on Reacher-v5, $d=0.47$; A2C vs.\ PPO on HalfCheetah-v5, $d=0.50$) have small-to-medium
-effect sizes for which even our full $n=10$ sample is underpowered (power below 20\% in both
-cases), explaining why our own rigorous analysis correctly declines to call either comparison
-significant: the honest conclusion is not that the algorithms in question are equivalent, but that
-we lack the statistical power, even at $n=10$, to resolve whichever modest difference (if any)
-exists between them.
+gives reasonable power, while the two persistently hard-to-detect pairs identified above have
+small-to-medium effect sizes for which even our full $n=20$ sample is underpowered. PPO vs.\ TD3
+on Reacher-v5 has $d=0.61$, giving only 47\% power at $n=20$ and requiring an estimated 43 seeds
+for conventional 80\% power; A2C vs.\ PPO on HalfCheetah-v5 has $d=0.75$, giving 63\% power at
+$n=20$ and requiring an estimated 30 seeds. This is the direct mechanistic explanation for
+Section~\ref{sec:smalln}'s finding that these two comparisons stay unreliable even at $k=19$: no
+seed count in the range used by either this study or the typical published literature is enough to
+reliably resolve an effect this size. Had our own rigorous analysis used only ten seeds, as our
+first pass of this experiment did, it would have lacked the power to detect either effect at all
+(Table~\ref{tab:power} reports power at $n=10$ alongside $n=20$); the honest conclusion at limited
+sample sizes is not that the algorithms in question are equivalent, but that the study is
+underpowered to resolve whichever modest difference (if any) exists between them.
 
 \begin{figure}[t]
   \centering
@@ -257,7 +280,7 @@ exists between them.
 
 \section{Discussion}
 
-Our results support three concrete, actionable recommendations for robot-control RL research, in
+Our results support four concrete, actionable recommendations for robot-control RL research, in
 the spirit of but more directly quantified than \cite{henderson2018deep} and
 \cite{colas2018many}.
 
@@ -268,14 +291,21 @@ our largest observed effect sizes leave a non-trivial disagreement rate at $k=3$
 publication's headline claim. Reporting five or more seeds sharply reduces, but does not
 eliminate, this risk.
 
-Second, when an effect is modest, as with the two pairs we found to have no detectable difference,
-no seed count in the range typically used in the literature is likely to resolve it
-(Table~\ref{tab:power}). A ``no significant difference'' finding under these conditions should be
-reported as inconclusive due to insufficient power, not as evidence of equivalence.
+Second, when an effect is modest, as with the two comparisons whose disagreement rate never falls
+below double digits in our data, no seed count in the range typically used in the literature, and
+in one case not even our full budget of twenty, is likely to resolve it (Table~\ref{tab:power}). A
+``no significant difference'' finding under these conditions should be reported as inconclusive
+due to insufficient power, not as evidence of equivalence.
 
-Third, multiple-comparison correction, while it did not change any conclusion in our particular
-dataset (Table~\ref{tab:pairwise}), is a second, independent source of inflated significance
-claims whenever more than one pairwise comparison is run, and costs nothing to apply.
+Third, this is not a purely hypothetical risk: at our full sample size of twenty seeds, a
+conventional Welch's $t$-test already missed one real effect (PPO vs.\ TD3 on Reacher-v5) that our
+rigorous bootstrap method correctly detected. A seed count several times larger than what most
+comparative RL papers report was still not enough to make the naive test reliable for this
+comparison.
+
+Fourth, multiple-comparison correction, while it did not change any conclusion in our particular
+dataset (Table~\ref{tab:pairwise}), is an independent source of inflated significance claims
+whenever more than one pairwise comparison is run, and costs nothing to apply.
 
 \section{Limitations and Future Work}
 
@@ -287,8 +317,10 @@ longer training budgets) to test whether the qualitative pattern, large effects 
 not always detected at small $k$, holds more broadly. We also fixed all hyperparameters to
 Stable-Baselines3 defaults; a tuned comparison could show different effect sizes and therefore
 different reliability profiles. Finally, our small-$N$ analysis draws sub-studies from a pool of
-only ten seeds; while our combinatorial enumeration is exact wherever tractable, a larger seed pool
-would let us test even sparser small-$N$ regimes (e.g., $k=1,2$) and probe the tails of the
+twenty seeds; while our combinatorial enumeration is exact wherever tractable, and our two most
+persistent cases (Section~\ref{sec:smalln}) remain unreliable even using nineteen of the twenty
+available seeds, an even larger seed pool would let us test whether their disagreement rate
+eventually reaches zero, test sparser small-$N$ regimes (e.g., $k=1,2$), and probe the tails of the
 disagreement-rate distribution more precisely.
 
 \section{Conclusion}
@@ -296,10 +328,15 @@ disagreement-rate distribution more precisely.
 We provide a direct, quantitative answer to a question implicit in years of reproducibility
 concerns about deep RL: given the seed budgets robot-control papers typically report, how often
 would their conclusions have differed from a much larger, statistically rigorous study of the same
-comparison? For the algorithms and tasks studied here, the answer is: often enough at three seeds
-to be a real concern, markedly less often at five, and negligibly by ten, with a statistical power
-analysis confirming this pattern follows directly from the underlying effect sizes. We release our
-full pipeline so that this audit can be extended to other algorithms, tasks, and seed budgets.
+comparison? For the algorithms and tasks studied here, the answer depends entirely on effect size.
+For large effects, disagreement is a real concern at three seeds but becomes negligible by five to
+ten. For modest effects, the risk is far more persistent: two of our twelve comparisons remain
+unreliable even at nineteen of twenty seeds, a budget already far beyond what almost any published
+robot-control RL paper reports, with a statistical power analysis confirming this persistence
+follows directly from the underlying effect sizes rather than any artifact of the naive test. Even
+our full twenty-seed sample produced one comparison where a conventional significance test missed
+an effect our rigorous method correctly detected. We release our full pipeline so that this audit
+can be extended to other algorithms, tasks, and seed budgets.
 
 \section*{Code and Data Availability}
 All training, analysis, and figure-generation code, together with the raw per-seed evaluation

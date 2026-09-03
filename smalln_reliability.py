@@ -40,7 +40,8 @@ def _smalln_trials(n_a, n_b, k, rng, max_pairs):
     return pairs, False
 
 
-def analyze_smalln_reliability(preset_name, ks=(3, 4, 5, 6, 7, 8, 9), rng_seed=0, max_pairs=4000):
+def analyze_smalln_reliability(preset_name, ks=(3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 19),
+                                rng_seed=0, max_pairs=4000):
     p = C.PRESETS[preset_name]
     scalar, _ = load_results(p["envs"], p["algos"], p["seeds"])
     rng = np.random.default_rng(rng_seed)

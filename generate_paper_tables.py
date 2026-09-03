@@ -58,7 +58,7 @@ def table_pairwise(preset):
         lines.append(
             f"{esc(r['env'])} & {pair} & {int(r['n_a'])} & {int(r['n_b'])} & "
             f"{r['naive_ttest_p']:.2g} & {naive_sig} & {holm_sig} & "
-            f"{r['prob_improvement']:.2f} [{r['poi_ci_lo']:.2f}, {r['poi_ci_hi']:.2f}] & {rig_sig} \\\\")
+            f"{r['prob_improvement']:.2f} [{r['poi_ci_lo']:.3f}, {r['poi_ci_hi']:.3f}] & {rig_sig} \\\\")
     n_disagree_naive = int((df["naive_significant_p05"] != df["rigorous_significant"]).sum())
     n_disagree_holm = int((df.get("naive_significant_holm_p05", df["naive_significant_p05"])
                           != df["rigorous_significant"]).sum())
