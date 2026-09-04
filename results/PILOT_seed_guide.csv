@@ -1,0 +1,11 @@
+cohens_d,label,n_for_80pct,n_for_90pct
+0.2,small (Cohen),393.4056930002527,526.3331885760534
+0.3,,176.0,234.46274235072315
+0.5,medium (Cohen),64.0,86.0
+0.61,"observed: PPO vs.\ TD3, Reacher",44.0,58.0
+0.75,"observed: A2C vs.\ PPO, HalfCheetah",29.0,39.0
+0.8,large (Cohen),26.0,34.0
+1.0,,17.0,23.0
+1.2,,12.0,16.0
+1.5,,9.0,11.0
+2.0,,6.0,7.0

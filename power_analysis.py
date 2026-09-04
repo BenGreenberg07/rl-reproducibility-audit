@@ -89,6 +89,30 @@ def _n_needed_for_power(d, target=0.8, grid=range(2, 201)):
         return float("nan")
 
 
+def seed_guide(preset_name, ds=(0.2, 0.3, 0.5, 0.61, 0.75, 0.8, 1.0, 1.2, 1.5, 2.0)):
+    """A general-purpose lookup table, independent of any specific algorithm pair or
+    environment: for a given observed |Cohen's d|, how many seeds does a two-sample
+    Welch's t-test need for 80%/90% power? Meant to be read off directly by an author
+    who has computed their own effect size, not just by readers of this specific audit.
+    d=0.2/0.5/0.8 are Cohen's (1988) small/medium/large conventions; d=0.61 and d=0.75
+    are the two effect sizes actually observed in our audit (Section IV), included so a
+    reader can anchor the abstract conventions to a concrete empirical case.
+    """
+    labels = {0.2: "small (Cohen)", 0.5: "medium (Cohen)", 0.8: "large (Cohen)",
+              0.61: "observed: PPO vs.\\ TD3, Reacher", 0.75: "observed: A2C vs.\\ PPO, HalfCheetah"}
+    rows = []
+    for d in sorted(ds):
+        rows.append(dict(
+            cohens_d=d,
+            label=labels.get(d, ""),
+            n_for_80pct=_n_needed_for_power(d, target=0.8),
+            n_for_90pct=_n_needed_for_power(d, target=0.9),
+        ))
+    df = pd.DataFrame(rows)
+    df.to_csv(C.RESULTS / f"{preset_name}_seed_guide.csv", index=False)
+    return df
+
+
 def power_table(preset_name, sample_sizes=(3, 5, 8, 10, 15, 20, 30, 50)):
     p = C.PRESETS[preset_name]
     scalar, _ = load_results(p["envs"], p["algos"], p["seeds"])
@@ -118,6 +142,7 @@ if __name__ == "__main__":
     ap.add_argument("--preset", required=True, choices=list(C.PRESETS))
     args = ap.parse_args()
     df = power_table(args.preset)
+    seed_guide(args.preset)
     if len(df) == 0:
         print("No algorithm pairs available yet.")
     else:

@@ -3,7 +3,7 @@
 
 \begin{document}
 
-\title{The Reliability Cost of Small-Seed Reporting in Deep Reinforcement Learning for Robot Control}
+\title{How Many Seeds Are Enough? A Reliability Audit and Seed-Count Guide for Deep RL Robot-Control Comparisons}
 
 % Author information withheld for double-anonymous review, per RA-L submission
 % instructions. Restore the \author{...} block with full name/affiliation/email
@@ -11,22 +11,25 @@
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{Submitted for double-anonymous review}}
 
-\markboth{Anonymous Submission}{Anonymous et al.: Small-Seed Reliability in Deep RL for Robot Control}
+\markboth{Anonymous Submission}{Anonymous et al.: How Many Seeds Are Enough for Deep RL Robot-Control Comparisons?}
 
 \maketitle
 
 \begin{abstract}
-Reported RL algorithm comparisons on robot-control benchmarks often rest on only three to five
-random seeds and a single significance test. We audit this practice using four algorithms (PPO,
-SAC, TD3, A2C) on two MuJoCo tasks with twenty seeds each, comparing naive small-$N$ conclusions
-against a rigorous bootstrap analysis (following Agarwal et al.) on the full data. Even at twenty
-seeds, one of twelve comparisons shows a genuine disagreement: a naive $t$-test narrowly misses
-significance ($p=0.060$) on an effect the rigorous method correctly detects. By exact combinatorial
-enumeration of all $k$-seed subsets ($k=3,\ldots,19$), we quantify how often a $k$-seed study
-reaches the wrong conclusion. For genuine effects, a 3-seed study is wrong up to
-\input{tables/PILOT_headline_worst_k3.tex}\% of the time; for the smallest effect size, this
-failure rate stays above 70\% even using nineteen of twenty seeds. A statistical power analysis
-explains the mechanism. We release our full pipeline, data, and code to support further audits.
+Authors deciding how many random seeds to run, and reviewers judging a three-seed comparison
+table, both need a concrete answer to the same question: how many seeds are actually enough? We
+audit four algorithms (PPO, SAC, TD3, A2C) on two MuJoCo robot-control tasks with twenty seeds
+each to provide one, comparing naive small-$N$ conclusions against a rigorous bootstrap analysis
+(following Agarwal et al.) on the full data. For a genuine effect, a 3-seed study reaches the
+wrong conclusion up to \input{tables/PILOT_headline_worst_k3.tex}\% of the time; for the smallest
+effect size we observe, this failure rate stays above 70\% even using nineteen of our twenty
+seeds, and at the full twenty seeds a conventional Welch's $t$-test still misses ($p=0.060$) an
+effect that the rigorous method correctly detects. We quantify these failure rates directly by
+exact combinatorial enumeration of every $k$-seed sub-study ($k=3,\ldots,19$) drawable from our
+data, and explain the mechanism with a statistical power analysis. From that analysis we build a
+general seed-count lookup table, keyed only on observed effect size, that authors and reviewers
+can apply to their own comparisons without rerunning our audit. We release our full pipeline,
+data, and code to support further audits.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -84,6 +87,10 @@ control robot tasks, Reacher-v5 and HalfCheetah-v5, implemented via Stable-Basel
   \item A statistical power analysis that explains this empirical result mechanistically, computing
     the power available at conventional seed counts (3, 5, 10) for each observed effect size, and
     the seed count that would be required for adequate (80\%) power.
+  \item A general, audit-independent seed-count guide (Table~\ref{tab:seed_guide}): given an
+    observed or pilot-estimated Cohen's $d$, the minimum seed count for 80\% or 90\% power under a
+    two-sample $t$-test, usable directly by an author choosing how many seeds to run or a reviewer
+    judging whether a reported seed count is adequate for the effect size being claimed.
   \item An open-source, reusable pipeline (training, statistical audit, small-$N$ reliability
     analysis, power analysis, and figure generation) that can be pointed at other algorithms,
     environments, or seed budgets to repeat this audit.
@@ -305,6 +312,22 @@ underpowered to resolve whichever modest difference (if any) exists between them
 \end{figure}
 
 \input{tables/PILOT_power.tex}
+
+\subsection{A Practical Seed-Count Guide}
+\label{sec:seed_guide}
+
+The two effect sizes above are specific to our four algorithms and two tasks, but the underlying
+power calculation is not. Table~\ref{tab:seed_guide} generalizes it into a lookup table usable by
+any author or reviewer, independent of algorithm or environment: compute the observed (or
+pilot-estimated) Cohen's $d$ for the comparison in question, find the nearest row at or above it,
+and read off the minimum seed count for conventional 80\% power (or the more conservative 90\%).
+For example, an author who observes $d=0.5$, a conventionally ``medium'' effect, needs at least 64
+seeds, not three or five, to have even an 80\% chance of detecting it with a two-sample $t$-test at
+$\alpha=0.05$; a reviewer evaluating a three-seed study making a $d\approx0.5$ claim can point to
+this table directly rather than reconstructing the power calculation from scratch. The table
+includes our own two observed effect sizes from Table~\ref{tab:power} for concrete anchoring.
+
+\input{tables/PILOT_seed_guide.tex}
 
 \section{Discussion}
 

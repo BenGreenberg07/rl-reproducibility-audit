@@ -123,6 +123,29 @@ def table_power(preset):
     write(f"{preset}_power.tex", "\n".join(lines))
 
 
+def table_seed_guide(preset):
+    df = pd.read_csv(C.RESULTS / f"{preset}_seed_guide.csv")
+    lines = [
+        r"\begin{table}[t]",
+        r"\centering",
+        r"\caption{Practical seed-count guide: minimum seeds for 80\%/90\% power to detect a two-sample effect of a given size $|d|$ (Welch's $t$-test, $\alpha{=}0.05$). Find your own observed $|d|$, round up to the nearest row.}",
+        r"\label{tab:seed_guide}",
+        r"\begin{tabular}{lrrl}",
+        r"\toprule",
+        r"$|d|$ & $n_{80\%}$ & $n_{90\%}$ & Note \\",
+        r"\midrule",
+    ]
+    for _, r in df.iterrows():
+        n80 = r["n_for_80pct"]
+        n90 = r["n_for_90pct"]
+        n80s = f"{n80:.0f}" if pd.notna(n80) and np.isfinite(n80) else "--"
+        n90s = f"{n90:.0f}" if pd.notna(n90) and np.isfinite(n90) else "--"
+        note = r["label"] if isinstance(r["label"], str) and r["label"] else ""
+        lines.append(f"{r['cohens_d']:.2f} & {n80s} & {n90s} & {note} \\\\")
+    lines += [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
+    write(f"{preset}_seed_guide.tex", "\n".join(lines))
+
+
 def table_aggregate(preset):
     df = pd.read_csv(C.RESULTS / f"{preset}_aggregate_across_envs.csv")
     lines = [
@@ -158,6 +181,7 @@ if __name__ == "__main__":
     table_pairwise(args.preset)
     table_smalln(args.preset)
     table_power(args.preset)
+    table_seed_guide(args.preset)
     table_aggregate(args.preset)
     n_runs_done(args.preset)
     print("All tables regenerated.")
