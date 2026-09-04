@@ -42,6 +42,20 @@ PRESETS = {
         n_eval_episodes=10,
         final_eval_episodes=30,
     ),
+    # Same scale/settings as PILOT (200k timesteps), but extended to all four MuJoCo tasks
+    # so the small-N reliability pattern can be checked for replication beyond Reacher and
+    # HalfCheetah. Content-addressed result filenames mean the 160 Reacher/HalfCheetah runs
+    # already done under PILOT are reused automatically; only the 160 Hopper/Walker2d runs
+    # are new. Added 2026-09-04 in response to reviewer feedback on scope generalization.
+    "PILOT4": dict(
+        envs=["Reacher-v5", "HalfCheetah-v5", "Hopper-v5", "Walker2d-v5"],
+        algos=["PPO", "SAC", "TD3", "A2C"],
+        seeds=list(range(20)),
+        total_timesteps=200_000,
+        eval_freq=10_000,
+        n_eval_episodes=10,
+        final_eval_episodes=30,
+    ),
     # Paper scale: run overnight / in background, more envs, more seeds, longer training.
     "FULL": dict(
         envs=["Reacher-v5", "HalfCheetah-v5", "Hopper-v5", "Walker2d-v5"],
