@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\caption{Practical seed-count guide: minimum seeds for 80\%/90\% power to detect a two-sample effect of a given size $|d|$ (Welch's $t$-test, $\alpha{=}0.05$). Find your own observed $|d|$, round up to the nearest row.}
+\label{tab:seed_guide}
+\begin{tabular}{lrrl}
+\toprule
+$|d|$ & $n_{80\%}$ & $n_{90\%}$ & Note \\
+\midrule
+0.20 & 393 & 526 & small (Cohen) \\
+0.30 & 176 & 234 &  \\
+0.35 & 126 & 168 & observed: A2C vs.\ TD3, Hopper \\
+0.50 & 64 & 86 & medium (Cohen) \\
+0.61 & 44 & 58 & observed: PPO vs.\ TD3, Reacher \\
+0.75 & 29 & 39 & observed: A2C vs.\ PPO, HalfCheetah \\
+0.80 & 26 & 34 & large (Cohen) \\
+1.00 & 17 & 23 &  \\
+1.20 & 12 & 16 &  \\
+1.50 & 9 & 11 &  \\
+2.00 & 6 & 7 &  \\
+\bottomrule
+\end{tabular}
+\end{table}

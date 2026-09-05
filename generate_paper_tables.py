@@ -43,6 +43,7 @@ def table_pairwise(preset):
     lines = [
         r"\begin{table*}[t]",
         r"\centering",
+        r"\footnotesize",
         r"\caption{Pairwise algorithm comparisons: naive Welch's $t$-test (raw and Holm-corrected) versus the rigorous bootstrap-CI'd probability of improvement, on the full seed set. A ``significant'' rigorous call means the 95\% CI on $P(A>B)$ excludes 0.5.}",
         r"\label{tab:pairwise}",
         r"\begin{tabular}{llrrccccc}",
@@ -70,22 +71,24 @@ def table_pairwise(preset):
 
 def table_smalln(preset):
     df = pd.read_csv(C.RESULTS / f"{preset}_smalln_reliability.csv")
-    # headline rows: k=3 and k=5 for every pair, the two most commonly reported seed counts
-    sub = df[df["k"].isin([3, 5])].copy()
+    # headline rows: k=3, the most commonly reported seed count in the literature; the
+    # full k=3..19 sweep for every pair is released in the CSV and plotted in Fig. 1.
+    sub = df[df["k"].isin([3])].copy()
     lines = [
         r"\begin{table*}[t]",
         r"\centering",
-        r"\caption{Small-$N$ reliability: probability that a naive study using only $k$ seeds reaches a conclusion that disagrees with the full-data rigorous answer, computed by exact (or, where noted, sampled) enumeration of $k$-seed subsets.}",
+        r"\footnotesize",
+        r"\caption{Small-$N$ reliability at $k=3$ seeds: probability that a naive 3-seed study reaches a conclusion that disagrees with the full-data rigorous answer, computed by exact (or, where noted, sampled) enumeration of 3-seed subsets. The full $k=3,\ldots,19$ sweep for every pair is released with our data and plotted in Fig.~\ref{fig:smalln}.}",
         r"\label{tab:smalln}",
-        r"\begin{tabular}{llccrrr}",
+        r"\begin{tabular}{llcrrr}",
         r"\toprule",
-        r"Env. & Pair & Real effect? & $k$ & Trials & \% naive sig.\ & Disagreement rate \\",
+        r"Env. & Pair & Real effect? & Trials & \% naive sig.\ & Disagreement rate \\",
         r"\midrule",
     ]
     for _, r in sub.sort_values(["env", "algo_a", "algo_b", "k"]).iterrows():
         real = r"\checkmark" if r["full_significant"] else "--"
         lines.append(
-            f"{esc(r['env'])} & {r['algo_a']} vs {r['algo_b']} & {real} & {int(r['k'])} & "
+            f"{esc(r['env'])} & {r['algo_a']} vs {r['algo_b']} & {real} & "
             f"{int(r['n_trials'])} & {r['pct_naive_significant']:.1f}\\% & "
             f"{r['disagreement_rate_pct']:.1f}\\% \\\\")
     lines += [r"\bottomrule", r"\end{tabular}", r"\end{table*}"]
@@ -104,6 +107,7 @@ def table_power(preset):
     lines = [
         r"\begin{table}[t]",
         r"\centering",
+        r"\footnotesize",
         r"\caption{Observed effect sizes (Cohen's $d$) and the statistical power available at conventional small seed counts, with the seed count needed for 80\% power.}",
         r"\label{tab:power}",
         r"\begin{tabular}{llrrrrr}",

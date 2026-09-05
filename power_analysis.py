@@ -89,16 +89,17 @@ def _n_needed_for_power(d, target=0.8, grid=range(2, 201)):
         return float("nan")
 
 
-def seed_guide(preset_name, ds=(0.2, 0.3, 0.5, 0.61, 0.75, 0.8, 1.0, 1.2, 1.5, 2.0)):
+def seed_guide(preset_name, ds=(0.2, 0.3, 0.355, 0.5, 0.61, 0.75, 0.8, 1.0, 1.2, 1.5, 2.0)):
     """A general-purpose lookup table, independent of any specific algorithm pair or
     environment: for a given observed |Cohen's d|, how many seeds does a two-sample
     Welch's t-test need for 80%/90% power? Meant to be read off directly by an author
     who has computed their own effect size, not just by readers of this specific audit.
-    d=0.2/0.5/0.8 are Cohen's (1988) small/medium/large conventions; d=0.61 and d=0.75
-    are the two effect sizes actually observed in our audit (Section IV), included so a
-    reader can anchor the abstract conventions to a concrete empirical case.
+    d=0.2/0.5/0.8 are Cohen's (1988) small/medium/large conventions; d=0.355, d=0.61, and
+    d=0.75 are effect sizes actually observed in our audit (Section IV), included so a
+    reader can anchor the abstract conventions to concrete empirical cases.
     """
     labels = {0.2: "small (Cohen)", 0.5: "medium (Cohen)", 0.8: "large (Cohen)",
+              0.355: "observed: A2C vs.\\ TD3, Hopper",
               0.61: "observed: PPO vs.\\ TD3, Reacher", 0.75: "observed: A2C vs.\\ PPO, HalfCheetah"}
     rows = []
     for d in sorted(ds):

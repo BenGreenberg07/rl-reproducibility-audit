@@ -11,3 +11,4 @@ paper/*.blg
 paper/*.out
 paper/*.synctex.gz
 pilot_sweep.log
+pilot4_sweep.log
