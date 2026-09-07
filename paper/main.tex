@@ -120,15 +120,13 @@ Learning Environment and Procgen. We apply the same toolkit specifically to robo
 and extend it with the exact small-$N$ combinatorial analysis that is the main methodological
 contribution of this paper.
 
-\textbf{Real-world and sim-to-real RL.} Mahmood et al.~\cite{mahmood2018benchmarking} benchmarked
-RL algorithms directly on physical robots and report the practical seed budgets real hardware
-allows, orders of magnitude below simulation. Dulac-Arnold et al.~\cite{dulac2021challenges}
-identify learning from limited real-system samples as a core unsolved challenge for deploying RL
-in practice. Zhao et al.~\cite{zhao2020simtoreal} survey sim-to-real transfer methods, the pipeline
-through which a simulation-stage algorithm choice, of the kind this paper studies, ultimately
-reaches physical robots. Our audit quantifies a risk that sits upstream of all three: if the
-simulation-stage comparison used to choose an algorithm is itself unreliable at small seed counts,
-that unreliability propagates into every downstream real-world or sim-to-real decision.
+\textbf{Real-world and sim-to-real RL.} Mahmood et al.~\cite{mahmood2018benchmarking} benchmark RL
+algorithms directly on physical robots, at seed budgets orders of magnitude below simulation.
+Dulac-Arnold et al.~\cite{dulac2021challenges} identify learning from limited real-system samples
+as a core unsolved deployment challenge, and Zhao et al.~\cite{zhao2020simtoreal} survey the
+sim-to-real pipelines through which a simulation-stage algorithm choice ultimately reaches physical
+robots. Our audit quantifies a risk upstream of all three: an unreliable simulation-stage
+comparison propagates into every downstream real-world or sim-to-real decision.
 
 \section{Method}
 
@@ -392,7 +390,9 @@ it independently on Reacher-v5, Hopper-v5, and Walker2d-v5. In the most extreme 
 resolving the effect with conventional 80\% power would need an estimated 126 seeds. A ``no
 significant difference'' finding under these conditions should be reported as inconclusive due to
 insufficient power, not as evidence of equivalence, and Walker2d-v5's PPO-vs-TD3 comparison shows
-this is not merely hypothetical: even our own full twenty-seed sample stays inconclusive on it.
+this is not merely hypothetical: even our own full twenty-seed sample stays inconclusive on it. This
+is arguably the paper's deepest lesson: rigor does not guarantee a verdict, and an honest
+``unresolved at this sample size'' beats forcing a call either way.
 
 Third, this is not a purely hypothetical risk in the other direction either: at our full sample
 size of twenty seeds, a conventional Welch's $t$-test already missed two real effects (PPO vs.\
@@ -451,7 +451,7 @@ extended to other algorithms, tasks, and seed budgets.
 
 \section*{Code and Data Availability}
 All training, analysis, and figure-generation code, together with the raw per-seed evaluation
-results, is available at: \texttt{[repository URL to be added before submission]}.
+results, is available at: \url{https://github.com/BenGreenberg07/rl-reproducibility-audit}.
 
 {\footnotesize
 \bibliographystyle{IEEEtran}

@@ -24,6 +24,7 @@ def table_iqm_summary(preset):
     lines = [
         r"\begin{table}[t]",
         r"\centering",
+        r"\footnotesize",
         r"\caption{Per-environment interquartile mean (IQM) final return with 95\% stratified bootstrap confidence intervals, by algorithm.}",
         r"\label{tab:iqm_summary}",
         r"\begin{tabular}{llrrr}",
@@ -132,6 +133,7 @@ def table_seed_guide(preset):
     lines = [
         r"\begin{table}[t]",
         r"\centering",
+        r"\footnotesize",
         r"\caption{Practical seed-count guide: minimum seeds for 80\%/90\% power to detect a two-sample effect of a given size $|d|$ (Welch's $t$-test, $\alpha{=}0.05$). Find your own observed $|d|$, round up to the nearest row.}",
         r"\label{tab:seed_guide}",
         r"\begin{tabular}{lrrl}",
@@ -155,6 +157,7 @@ def table_aggregate(preset):
     lines = [
         r"\begin{table}[t]",
         r"\centering",
+        r"\footnotesize",
         r"\caption{Aggregate cross-environment ranking: IQM of min-max normalized scores pooled across all benchmark tasks, with 95\% bootstrap CI.}",
         r"\label{tab:aggregate}",
         r"\begin{tabular}{lrrr}",
