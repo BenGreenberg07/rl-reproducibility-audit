@@ -15,19 +15,22 @@
 \begin{abstract}
 Authors deciding how many random seeds to run, and reviewers judging a three-seed comparison
 table, both need a concrete answer to the same question: how many seeds are actually enough? We
-audit four algorithms (PPO, SAC, TD3, A2C) on four MuJoCo robot-control tasks with twenty seeds
-each to provide one, comparing naive small-$N$ conclusions against a rigorous bootstrap analysis
-(following Agarwal et al.) on the full data. For a genuine effect, a 3-seed study reaches the
-wrong conclusion up to \input{tables/PILOT4_headline_worst_k3.tex}\% of the time; for the smallest
-effect size we observe, this failure rate stays at 95\% even using nineteen of our twenty seeds,
-and at the full twenty seeds a conventional Welch's $t$-test misses two such effects entirely
-($p=0.060$ and $p=0.269$, on two different environments) that the rigorous method correctly
-detects in both cases. We quantify these failure rates directly by exact combinatorial enumeration
-of every $k$-seed sub-study ($k=3,\ldots,19$) drawable from our data, and explain the mechanism
-with a statistical power analysis: the hardest case would need an estimated 126 seeds for
-conventional 80\% power. From that analysis we build a general seed-count lookup table, keyed only
-on observed effect size, that authors and reviewers can apply to their own comparisons without
-rerunning our audit. We release our full pipeline, data, and code to support further audits.
+answer it two ways. First, a general, effect-size-indexed seed-count lookup table
+(Table~\ref{tab:seed_guide}) that any author or reviewer can apply directly to their own
+comparison, no rerun of our analysis required: given an observed Cohen's $d$, it returns the
+minimum seed count for conventional 80\% or 90\% power. Second, the empirical audit behind it:
+four algorithms (PPO, SAC, TD3, A2C) on four MuJoCo robot-control tasks with twenty seeds each,
+comparing naive small-$N$ conclusions against a rigorous bootstrap analysis (following Agarwal et
+al.) on the full data. For a genuine effect, a 3-seed study reaches the wrong conclusion up to
+\input{tables/PILOT4_headline_worst_k3.tex}\% of the time; for the smallest effect size we observe,
+this failure rate stays at 95\% even using nineteen of our twenty seeds, and at the full twenty
+seeds a conventional Welch's $t$-test misses two such effects entirely ($p=0.060$ and $p=0.269$,
+on two different environments) that the rigorous method correctly detects in both cases. We
+quantify these failure rates directly by exact combinatorial enumeration of every $k$-seed
+sub-study ($k=3,\ldots,19$) drawable from our data, and explain the mechanism with a statistical
+power analysis: the hardest case would need an estimated 126 seeds for conventional 80\% power,
+far beyond what the seed-count guide's own textbook effect-size bands would suggest. We release
+our full pipeline, data, and code to support further audits.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -75,6 +78,10 @@ Stable-Baselines3 \cite{raffin2021stable} on Gymnasium~\cite{towers2024gymnasium
 are:
 
 \begin{enumerate}
+  \item A general, audit-independent seed-count guide (Table~\ref{tab:seed_guide}): given an
+    observed or pilot-estimated Cohen's $d$, the minimum seed count for 80\% or 90\% power under a
+    two-sample $t$-test, usable directly by an author choosing how many seeds to run or a reviewer
+    judging whether a reported seed count is adequate for the effect size being claimed.
   \item A full statistical audit of \input{tables/PILOT4_n_runs.tex} independent training runs
     (twenty seeds per algorithm-environment pair), comparing naive Welch's $t$-tests, both
     uncorrected and Holm-corrected~\cite{holm1979sequentially} for multiple comparisons, against
@@ -85,11 +92,8 @@ are:
     fraction that would have reached a conclusion contradicting the full-data answer.
   \item A statistical power analysis that explains this empirical result mechanistically, computing
     the power available at conventional seed counts (3, 5, 10) for each observed effect size, and
-    the seed count that would be required for adequate (80\%) power.
-  \item A general, audit-independent seed-count guide (Table~\ref{tab:seed_guide}): given an
-    observed or pilot-estimated Cohen's $d$, the minimum seed count for 80\% or 90\% power under a
-    two-sample $t$-test, usable directly by an author choosing how many seeds to run or a reviewer
-    judging whether a reported seed count is adequate for the effect size being claimed.
+    the seed count that would be required for adequate (80\%) power, and that produces the guide
+    above.
   \item An open-source, reusable pipeline (training, statistical audit, small-$N$ reliability
     analysis, power analysis, and figure generation) that can be pointed at other algorithms,
     environments, or seed budgets to repeat this audit.
@@ -127,6 +131,16 @@ as a core unsolved deployment challenge, and Zhao et al.~\cite{zhao2020simtoreal
 sim-to-real pipelines through which a simulation-stage algorithm choice ultimately reaches physical
 robots. Our audit quantifies a risk upstream of all three: an unreliable simulation-stage
 comparison propagates into every downstream real-world or sim-to-real decision.
+
+\textbf{Reproducibility beyond RL.} The concerns we quantify here are not unique to reinforcement
+learning. Pineau et al.~\cite{pineau2021improving}, reporting from the NeurIPS 2019 reproducibility
+program, find incomplete reporting of experimental variance across machine learning broadly, not
+just RL, and Lipton and Steinhardt~\cite{lipton2019troubling} identify the failure to distinguish
+genuine improvement from noise as one of several recurring pathologies across the field's
+scholarship as a whole. An exact, empirical quantification of how often a given seed budget
+reaches the wrong conclusion, together with a general seed-count guide derived from it, is a
+concrete instance of the fix these broader critiques call for, applied here to the robot-control
+setting where the practical cost of an underpowered comparison is highest.
 
 \section{Method}
 

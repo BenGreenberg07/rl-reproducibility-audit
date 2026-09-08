@@ -152,13 +152,14 @@ Two compiled drafts live in `paper/`:
 - `main.tex` / `main.pdf` — the full draft with author information, for an
   arXiv-style preprint or camera-ready use after acceptance.
 - `main_anon.tex` / `main_anon.pdf` — an anonymized copy for actual submission.
-  **IEEE RA-L uses double-anonymous review** (verified against their author
-  instructions): reviewers must not be able to identify the authors, so the
-  anonymized copy has no name, affiliation, or identifying repository link. If
-  you edit the paper's content, apply the same edit to both files, or regenerate
-  `main_anon.tex` from `main.tex` and reapply the anonymization diff (strip the
-  `\author{...}` block, the `\thanks{...}` footnote, and the repository URL in
-  "Code and Data Availability").
+  Target venue is **IEEE Transactions on Neural Networks and Learning Systems
+  (TNNLS)**, which (like RA-L) uses double-anonymous review (verified against
+  their author guidelines): reviewers must not be able to identify the authors,
+  so the anonymized copy has no name, affiliation, or identifying repository
+  link. If you edit the paper's content, apply the same edit to both files, or
+  regenerate `main_anon.tex` from `main.tex` and reapply the anonymization diff
+  (strip the `\author{...}` block, the `\thanks{...}` footnote, and the
+  repository URL in "Code and Data Availability").
 
 This repository is public, but the anonymized submission copy (`main_anon.tex` /
 `main_anon.pdf`) does not link to it, so publishing it here does not itself
