@@ -62,7 +62,7 @@ def fig_iqm_comparison(preset_name):
         ax.set_xlabel("IQM final return (95% bootstrap CI)")
         ax.set_title(env_id)
     fig.suptitle("Interquartile mean performance with bootstrap confidence intervals", fontsize=10)
-    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    fig.tight_layout(rect=[0, 0, 1, 0.90])
     fig.savefig(C.FIGURES / f"iqm_comparison_{preset_name}.png")
     plt.close(fig)
     print(f"iqm_comparison_{preset_name}.png")
@@ -91,60 +91,83 @@ def fig_aggregate(preset_name, df_agg):
 
 def fig_smalln_reliability(preset_name):
     """Headline figure: how often would a naive small-N (k seeds) study have reached the
-    wrong conclusion, relative to what the full data actually shows, as a function of k."""
+    wrong conclusion, relative to what the full data actually shows, as a function of k.
+    One panel per environment, shared axes, so each panel shows only that environment's
+    six algorithm pairs instead of cramming all pairs across all environments together."""
     from smalln_reliability import analyze_smalln_reliability
     df = analyze_smalln_reliability(preset_name)
     if df is None or len(df) == 0:
         print("skip fig_smalln_reliability (not enough seeds yet)")
         return
-    fig, ax = plt.subplots(figsize=(7.5, 5.5))
+    envs = sorted(df["env"].unique())
+    ncols = 2
+    nrows = int(np.ceil(len(envs) / ncols))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(10, 3.0 * nrows), sharex=True, sharey=True)
+    axes = np.atleast_1d(axes).flatten()
     any_no_effect = False
-    for (env_id, a1, a2), sub in df.groupby(["env", "algo_a", "algo_b"]):
-        sub = sub.sort_values("k")
-        label = f"{a1} vs {a2} ({env_id})"
-        has_effect = bool(sub["full_significant"].iloc[0])
-        any_no_effect = any_no_effect or not has_effect
-        style = "-o" if has_effect else "--s"
-        ax.plot(sub["k"], sub["disagreement_rate_pct"], style, label=label, alpha=0.85, ms=4)
-    ax.set_xlabel("Number of seeds used in the naive small-N study (k)")
-    ax.set_ylabel("Disagreement rate vs. full-data conclusion (%)")
-    if any_no_effect:
-        subtitle = "(solid = a real effect exists; dashed = no real effect, false-positive rate)"
-    else:
-        subtitle = "(every pair here has a genuine effect at full sample size)"
-    ax.set_title(f"How often would a naive k-seed study get it wrong?\n{subtitle}")
-    ax.legend(fontsize=7, loc="upper right")
-    ax.axhline(5, color="gray", lw=0.8, ls=":")
-    fig.tight_layout()
-    fig.savefig(C.FIGURES / f"smalln_disagreement_{preset_name}.png")
+    for ax, env_id in zip(axes, envs):
+        for (a1, a2), sub in df[df["env"] == env_id].groupby(["algo_a", "algo_b"]):
+            sub = sub.sort_values("k")
+            has_effect = bool(sub["full_significant"].iloc[0])
+            any_no_effect = any_no_effect or not has_effect
+            style = "-o" if has_effect else "--s"
+            ax.plot(sub["k"], sub["disagreement_rate_pct"], style, label=f"{a1} vs {a2}",
+                     alpha=0.85, ms=4)
+        ax.axhline(5, color="gray", lw=0.8, ls=":")
+        ax.set_title(env_id, fontsize=10)
+        ax.legend(fontsize=7, loc="upper right")
+    for ax in axes[len(envs):]:
+        ax.axis("off")
+    for i, ax in enumerate(axes[:len(envs)]):
+        if i % ncols == 0:
+            ax.set_ylabel("Disagreement rate (%)")
+        if i >= len(envs) - ncols:
+            ax.set_xlabel("Seeds used in the naive study (k)")
+    subtitle = ("solid = a real effect exists; dashed = no real effect, false-positive rate"
+                if any_no_effect else "every pair shown has a genuine effect at full sample size")
+    fig.suptitle(f"How often would a naive k-seed study get it wrong?\n({subtitle})")
+    fig.subplots_adjust(top=0.85, hspace=0.3, wspace=0.15)
+    fig.savefig(C.FIGURES / f"smalln_disagreement_{preset_name}.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"smalln_disagreement_{preset_name}.png")
 
 
 def fig_power_curves(preset_name):
     """Theoretical companion: achieved statistical power vs. sample size, for each
-    algorithm pair's actually-observed effect size."""
+    algorithm pair's actually-observed effect size. One panel per environment, shared
+    axes, so each panel shows only that environment's six pairs."""
     from power_analysis import power_table, _safe_power
     df = power_table(preset_name)
     if df is None or len(df) == 0:
         print("skip fig_power_curves (not enough data yet)")
         return
     ns = np.arange(2, 41)
-    fig, ax = plt.subplots(figsize=(7.5, 5.5))
-    for _, row in df.iterrows():
-        d = row["observed_cohens_d"]
-        powers = [_safe_power(d, n) for n in ns]
-        ax.plot(ns, powers, marker=None,
-                label=f"{row['algo_a']} vs {row['algo_b']} ({row['env']}, d={d:.2f})")
-    ax.axhline(0.8, color="black", lw=1, ls="--", label="80% power (conventional target)")
-    for k in (3, 5, 10):
-        ax.axvline(k, color="gray", lw=0.6, ls=":")
-    ax.set_xlabel("Number of seeds (n per algorithm)")
-    ax.set_ylabel("Statistical power")
-    ax.set_title("Why small-N fails: power to detect the observed effect sizes")
-    ax.legend(fontsize=7, loc="lower right")
-    fig.tight_layout()
-    fig.savefig(C.FIGURES / f"power_curves_{preset_name}.png")
+    envs = sorted(df["env"].unique())
+    ncols = 2
+    nrows = int(np.ceil(len(envs) / ncols))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(10, 3.0 * nrows), sharex=True, sharey=True)
+    axes = np.atleast_1d(axes).flatten()
+    for ax, env_id in zip(axes, envs):
+        for _, row in df[df["env"] == env_id].iterrows():
+            d = row["observed_cohens_d"]
+            powers = [_safe_power(d, n) for n in ns]
+            ax.plot(ns, powers, label=f"{row['algo_a']} vs {row['algo_b']} (d={d:.2f})")
+        ax.axhline(0.8, color="black", lw=1, ls="--")
+        for k in (3, 5, 10):
+            ax.axvline(k, color="gray", lw=0.6, ls=":")
+        ax.set_title(env_id, fontsize=10)
+        ax.legend(fontsize=7, loc="lower right")
+    for ax in axes[len(envs):]:
+        ax.axis("off")
+    for i, ax in enumerate(axes[:len(envs)]):
+        if i % ncols == 0:
+            ax.set_ylabel("Statistical power")
+        if i >= len(envs) - ncols:
+            ax.set_xlabel("Number of seeds (n per algorithm)")
+    fig.suptitle("Why small-N fails: power to detect the observed effect sizes\n"
+                 "(dashed black = 80% power target; dotted gray = n = 3, 5, 10)")
+    fig.subplots_adjust(top=0.85, hspace=0.3, wspace=0.15)
+    fig.savefig(C.FIGURES / f"power_curves_{preset_name}.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"power_curves_{preset_name}.png")
 
