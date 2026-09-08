@@ -1,8 +1,10 @@
 # How many seeds does a deep RL robot-control comparison actually need?
 
-A statistical-rigor audit of deep RL algorithms on continuous-control benchmarks,
-and the accompanying paper, "How Many Seeds Are Enough? A Reliability Audit and
-Seed-Count Guide for Deep RL Robot-Control Comparisons."
+A statistical-rigor audit of deep RL algorithms on continuous-control benchmarks:
+the full pipeline, raw per-seed results, and figures behind the paper "How Many
+Seeds Are Enough? A Reliability Audit and Seed-Count Guide for Deep RL
+Robot-Control Comparisons." The manuscript itself is under double-anonymous
+review and isn't published in this repository (see "About the paper" below).
 
 ## The question
 
@@ -31,11 +33,9 @@ it actually take to fix that?
 - One comparison (PPO vs. TD3, Walker2d-v5) never reaches significance under
   either method even at the full 20 seeds — a real example of "underpowered,
   unresolved" being the honest answer.
-- A general, effect-size-indexed seed-count lookup table (Table VI in the paper)
-  lets any author or reviewer look up the minimum seed count for 80%/90% power
-  without rerunning this audit.
-
-See `paper/main.pdf` for the full writeup.
+- A general, effect-size-indexed seed-count lookup table lets any author or
+  reviewer look up the minimum seed count for 80%/90% power without rerunning
+  this audit; see `results/PILOT4_seed_guide.csv`.
 
 ## Pipeline
 
@@ -77,11 +77,9 @@ See `paper/main.pdf` for the full writeup.
    general, algorithm-and-environment-independent seed-count lookup table
    (Table VI).
 8. `generate_paper_tables.py`: renders every results CSV into a LaTeX table
-   snippet under `paper/tables/`, so the paper's numbers are never
-   hand-transcribed. Run this after any change to the underlying data, then
-   recompile `paper/main.tex`.
-9. `paper/`: the IEEE-style manuscript (`main.tex` + `refs.bib`), compiled with a
-   local TinyTeX install. See `paper/main.pdf` for the current draft.
+   snippet (kept with the manuscript, not in this repo — see "About the paper"),
+   so the paper's numbers are never hand-transcribed. Run this after any change
+   to the underlying data.
 
 ## A methodological note
 
@@ -113,13 +111,7 @@ do not need to retrain anything to reproduce the paper's core table:
 
 This prints the full naive-vs-rigorous comparison for all 24 algorithm pairs (the
 console table matches Table III in the paper) and writes
-`results/PILOT4_pairwise_comparisons.csv`. To regenerate the exact LaTeX used in
-the paper:
-
-```
-./rlvenv/bin/python3 generate_paper_tables.py --preset PILOT4
-cat paper/tables/PILOT4_pairwise.tex
-```
+`results/PILOT4_pairwise_comparisons.csv`.
 
 To reproduce the rest of the paper's numbers (small-N reliability, power
 analysis, figures) from the same released data:
@@ -145,23 +137,11 @@ consumer laptop for the full 320-run `PILOT4` grid):
 exists, so deleting a subset of `results/*.npz` and rerunning only retrains what's
 missing.
 
-## The paper
+## About the paper
 
-Two compiled drafts live in `paper/`:
-
-- `main.tex` / `main.pdf` — the full draft with author information, for an
-  arXiv-style preprint or camera-ready use after acceptance.
-- `main_anon.tex` / `main_anon.pdf` — an anonymized copy for actual submission.
-  Target venue is **IEEE Transactions on Neural Networks and Learning Systems
-  (TNNLS)**, which (like RA-L) uses double-anonymous review (verified against
-  their author guidelines): reviewers must not be able to identify the authors,
-  so the anonymized copy has no name, affiliation, or identifying repository
-  link. If you edit the paper's content, apply the same edit to both files, or
-  regenerate `main_anon.tex` from `main.tex` and reapply the anonymization diff
-  (strip the `\author{...}` block, the `\thanks{...}` footnote, and the
-  repository URL in "Code and Data Availability").
-
-This repository is public, but the anonymized submission copy (`main_anon.tex` /
-`main_anon.pdf`) does not link to it, so publishing it here does not itself
-compromise double-anonymous review — just don't paste this repository's URL into
-the actual submission until after review.
+The manuscript is targeting **IEEE Transactions on Neural Networks and Learning
+Systems (TNNLS)**, which uses double-anonymous review, so it's kept out of this
+public repository for now rather than published alongside the code. The
+submission itself does not link back here. Once review has concluded, the
+compiled paper can be added to this repo (or linked from it) alongside the
+code and data it was built from.

@@ -12,3 +12,9 @@ paper/*.out
 paper/*.synctex.gz
 pilot_sweep.log
 pilot4_sweep.log
+
+# The manuscript is kept locally, not published to this repo (see README):
+# avoids putting author-identifying text in a public repo during
+# double-anonymous review, and a reproducibility repo doesn't need the
+# paper itself anyway.
+paper/
