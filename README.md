@@ -4,8 +4,9 @@ A statistical-rigor audit of deep RL algorithms on continuous-control benchmarks
 the full pipeline, raw per-seed results, and figures behind the paper "How Many
 Seeds Are Enough? A Reliability Audit and Seed-Count Guide for Deep RL
 Robot-Control Comparisons." The manuscript itself isn't published in this
-repository (see "About the paper" below), but the submission links directly
-here, since TNNLS review is single-blind (authors are visible to reviewers).
+repository (see "About the paper" below). TNNLS review is double-anonymous, so
+the submission links to an anonymized mirror of this repository rather than
+here directly, and swaps in this real link at acceptance.
 
 ## The question
 
@@ -141,10 +142,15 @@ missing.
 ## About the paper
 
 The manuscript is targeting **IEEE Transactions on Neural Networks and Learning
-Systems (TNNLS)**. TNNLS review is single-blind (per its official "Information
-for Authors": reviewers know the authors' identities, though not vice versa),
-so there's no anonymity to protect and the submitted manuscript itself links
-directly to this repository. The compiled paper is kept out of this
-repository as a matter of scope (a reproducibility repo doesn't need the
+Systems (TNNLS)**. TNNLS review is double-anonymous (confirmed directly against
+the live IEEE CIS "Information for Authors" page, not a cached/PDF copy, which
+turned out to be stale): "reviewed... using a double-anonymous peer review
+process, where the identities of the reviewers are not known to the authors,
+and the reviewers do not know the identities of the authors." The submitted
+manuscript therefore has no name, affiliation, or identifying repository link,
+and points instead to an anonymized mirror of this repository (via
+anonymous.4open.science) that gets swapped for this real link at acceptance.
+The compiled paper is kept out of this repository as a matter of scope (a
+reproducibility repo doesn't need the
 manuscript itself, just the code, data, and figures it was built from), not
 because of blind review.

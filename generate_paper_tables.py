@@ -15,7 +15,10 @@ def esc(s):
 
 
 def write(name, content):
-    (OUT / name).write_text(content)
+    # Trailing "%" absorbs the phantom end-of-line space TeX otherwise inserts at
+    # EOF, which is invisible for full table/figure environments but shows up as a
+    # stray space wherever a snippet is \input inline mid-sentence (e.g. "94 %").
+    (OUT / name).write_text(content.rstrip() + "%")
     print(f"wrote paper/tables/{name}")
 
 
@@ -67,7 +70,8 @@ def table_pairwise(preset):
     lines += [r"\bottomrule", r"\end{tabular}", r"\end{table*}"]
     write(f"{preset}_pairwise.tex", "\n".join(lines))
     write(f"{preset}_pairwise_disagree_counts.tex",
-          f"{n_disagree_naive}/{len(df)} naive; {n_disagree_holm}/{len(df)} Holm-corrected")
+          f"{n_disagree_naive} of the {len(df)} comparisons reported here "
+          f"(Holm-corrected: {n_disagree_holm} of {len(df)})")
 
 
 def table_smalln(preset):

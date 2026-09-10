@@ -89,27 +89,37 @@ def _n_needed_for_power(d, target=0.8, grid=range(2, 201)):
         return float("nan")
 
 
-def seed_guide(preset_name, ds=(0.2, 0.3, 0.355, 0.5, 0.61, 0.75, 0.8, 1.0, 1.2, 1.5, 2.0)):
+def seed_guide(preset_name, cohen_bands=(0.2, 0.3, 0.5, 0.8, 1.0, 1.2, 1.5, 2.0)):
     """A general-purpose lookup table, independent of any specific algorithm pair or
     environment: for a given observed |Cohen's d|, how many seeds does a two-sample
     Welch's t-test need for 80%/90% power? Meant to be read off directly by an author
     who has computed their own effect size, not just by readers of this specific audit.
-    d=0.2/0.5/0.8 are Cohen's (1988) small/medium/large conventions; d=0.355, d=0.61, and
-    d=0.75 are effect sizes actually observed in our audit (Section IV), included so a
-    reader can anchor the abstract conventions to concrete empirical cases.
+    d=0.2/0.5/0.8 are Cohen's (1988) small/medium/large conventions. The "observed"
+    anchor rows use the *exact* (unrounded) effect sizes from our own power_table()
+    results, not hand-rounded literals, so their seed counts here match Table V exactly
+    rather than differing by a seed or two from display rounding.
     """
-    labels = {0.2: "small (Cohen)", 0.5: "medium (Cohen)", 0.8: "large (Cohen)",
-              0.355: "observed: A2C vs.\\ TD3, Hopper",
-              0.61: "observed: PPO vs.\\ TD3, Reacher", 0.75: "observed: A2C vs.\\ PPO, HalfCheetah"}
+    anchors = [
+        ("Hopper-v5", "A2C", "TD3", "observed: A2C vs.\\ TD3, Hopper"),
+        ("Reacher-v5", "PPO", "TD3", "observed: PPO vs.\\ TD3, Reacher"),
+        ("HalfCheetah-v5", "A2C", "PPO", "observed: A2C vs.\\ PPO, HalfCheetah"),
+    ]
+    pt = power_table(preset_name)
     rows = []
-    for d in sorted(ds):
-        rows.append(dict(
-            cohens_d=d,
-            label=labels.get(d, ""),
-            n_for_80pct=_n_needed_for_power(d, target=0.8),
-            n_for_90pct=_n_needed_for_power(d, target=0.9),
-        ))
-    df = pd.DataFrame(rows)
+    for d in cohen_bands:
+        label = {0.2: "small (Cohen)", 0.5: "medium (Cohen)", 0.8: "large (Cohen)"}.get(d, "")
+        rows.append(dict(cohens_d=d, label=label,
+                          n_for_80pct=_n_needed_for_power(d, target=0.8),
+                          n_for_90pct=_n_needed_for_power(d, target=0.9)))
+    for env_id, a1, a2, label in anchors:
+        match = pt[(pt.env == env_id) & (pt.algo_a == a1) & (pt.algo_b == a2)]
+        if len(match) == 0:
+            continue
+        d = float(match["observed_cohens_d"].iloc[0])
+        rows.append(dict(cohens_d=d, label=label,
+                          n_for_80pct=_n_needed_for_power(d, target=0.8),
+                          n_for_90pct=_n_needed_for_power(d, target=0.9)))
+    df = pd.DataFrame(rows).sort_values("cohens_d").reset_index(drop=True)
     df.to_csv(C.RESULTS / f"{preset_name}_seed_guide.csv", index=False)
     return df
 

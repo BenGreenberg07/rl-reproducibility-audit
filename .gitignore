@@ -14,7 +14,8 @@ pilot_sweep.log
 pilot4_sweep.log
 
 # The manuscript is kept locally, not published to this repo (see README):
-# a reproducibility repo doesn't need the paper itself, just the code, data,
-# and figures it was built from. (TNNLS review is single-blind, not
-# double-anonymous, so this is a scope choice, not an anonymity precaution.)
+# TNNLS review is double-anonymous (confirmed against the live IEEE CIS page),
+# so the submitted PDF has no identifying info and links to an anonymized
+# mirror of this repo instead of here directly. Also, a reproducibility repo
+# doesn't need the manuscript itself, just the code, data, and figures.
 paper/
